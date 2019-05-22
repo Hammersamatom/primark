@@ -1,5 +1,10 @@
-test
+# Name of the program
+primark
+
+# Compiled stuff
 *.o
-.vscode
 *.out
 *.gcda
+
+# Unneeded stuff
+.vscode
