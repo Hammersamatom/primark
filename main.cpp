@@ -3,9 +3,9 @@
 #include <stdio.h>
 #include <math.h>
 
-int main()
+void primes()
 {
-    std::vector<unsigned long> primes;
+    std::vector<unsigned long> localPrimes;
     clock_t startTicks = clock();
     unsigned long n = 0;
 
@@ -24,7 +24,7 @@ int main()
         
         if (flag)
         {
-            primes.push_back(n);
+            localPrimes.push_back(n);
         }
 
         n++;
@@ -33,7 +33,11 @@ int main()
         startTicks = clock() - startTicks;
     }
 
-    printf("Final score: %.2lf\n", primes.size()/(((float)startTicks/CLOCKS_PER_SEC)*100));
+    printf("Final score: %.2lf\n", localPrimes.size()/(((float)startTicks/CLOCKS_PER_SEC)*100));
+}
 
+int main()
+{
+    primes();
     return 0;
 }
