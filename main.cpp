@@ -7,7 +7,7 @@ int main()
 {
     std::vector<unsigned long> primes;
     clock_t startTicks = clock();
-    ulong n = 0;
+    unsigned long n = 0;
 
     while ((float)startTicks/CLOCKS_PER_SEC < 60)
     {
@@ -22,7 +22,7 @@ int main()
             }
         }
         
-        if (flag == true)
+        if (flag)
         {
             primes.push_back(n);
         }

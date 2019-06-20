@@ -1,5 +1,5 @@
 CC=g++
-CPPFLAGS=-march=native -mtune=native -Os -fno-plt -flto -fno-exceptions
+CPPFLAGS=-march=native -mtune=native -O3 -fno-plt -flto -fno-exceptions
 PROGNAME=primark
 
 $(PROGNAME): main.o
