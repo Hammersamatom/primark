@@ -7,16 +7,16 @@
 #include <mutex>
 #include <algorithm>
 
-
-std::vector<std::thread> threads;
-std::vector<double> globalPrimes;
 std::mutex mylock;
+std::vector<std::thread> threads;
+std::vector<double> multiPrimes;
+double singlePrime = 0;
 
 void primes()
 {
     std::vector<unsigned long> localPrimes;
     auto startTime = std::chrono::high_resolution_clock::now();
-    auto diffTime = 0;
+    double diffTime = 0;
     unsigned long n = 0;
 
     while (diffTime < 6000)
@@ -47,7 +47,7 @@ void primes()
 
     mylock.lock();
 
-    globalPrimes.push_back((double)localPrimes.size()/6000);
+    multiPrimes.push_back((double)localPrimes.size()/6000);
 
     mylock.unlock();
 
@@ -64,17 +64,34 @@ void join_all(std::vector<std::thread>& threadVect)
 
 int main()
 {
+    threads.push_back(std::thread(primes));
+    join_all(threads);
+
+    singlePrime = multiPrimes[0];
+
+    threads.clear();
+    multiPrimes.clear();
+
+
     for (int i = 0; i < std::thread::hardware_concurrency(); i++)
     {
         threads.push_back(std::thread(primes));
     }
-    
     join_all(threads);
 
-    std::sort(globalPrimes.begin(),globalPrimes.end());
+    double projectedTotal = singlePrime * std::thread::hardware_concurrency();
+    double actualTotal = 0;
 
-    for (int i = 0; i < globalPrimes.size(); i++)
-        printf("%lf\n", globalPrimes[i]);
+    for (int i = 0; i < multiPrimes.size(); i++)
+    {
+        actualTotal += multiPrimes[i]; 
+    }
+
+
+    printf("Single-Core Score: %lf\n", singlePrime);
+    printf("Projected Multi-Core Score: %lf\n", singlePrime*std::thread::hardware_concurrency());
+    printf("Average Multi-Core Score: %lf\n", actualTotal/std::thread::hardware_concurrency());
+    printf("Actual Multi-Core Score: %lf\n", actualTotal);
 
     return 0;
 }
