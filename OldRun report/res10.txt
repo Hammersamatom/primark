@@ -1,0 +1,23 @@
+Average Multi-Core Score: 296.872573
+Actual Multi-Core Score: 2968.725735
+
+ Performance counter stats for './primark 10':
+
+        599,829.97 msec task-clock:u              #    9.996 CPUs utilized          
+                 0      context-switches:u        #    0.000 K/sec                  
+                 0      cpu-migrations:u          #    0.000 K/sec                  
+            75,989      page-faults:u             #    0.127 K/sec                  
+ 2,359,106,403,158      cycles:u                  #    3.933 GHz                      (83.33%)
+   870,328,140,261      stalled-cycles-frontend:u #   36.89% frontend cycles idle     (83.33%)
+   760,003,173,127      stalled-cycles-backend:u  #   32.22% backend cycles idle      (83.33%)
+ 1,748,351,060,310      instructions:u            #    0.74  insn per cycle         
+                                                  #    0.50  stalled cycles per insn  (83.33%)
+   396,355,277,871      branches:u                #  660.779 M/sec                    (83.33%)
+       150,397,393      branch-misses:u           #    0.04% of all branches          (83.34%)
+
+      60.006940074 seconds time elapsed
+
+     679.402531000 seconds user
+       0.112434000 seconds sys
+
+

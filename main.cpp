@@ -7,10 +7,11 @@
 #include <mutex>
 #include <algorithm>
 
+unsigned long threadCount = 0;
+
 std::mutex mylock;
 std::vector<std::thread> threads;
 std::vector<double> multiPrimes;
-double singlePrime = 0;
 
 void primes()
 {
@@ -18,6 +19,7 @@ void primes()
     auto startTime = std::chrono::high_resolution_clock::now();
     double diffTime = 0;
     unsigned long n = 0;
+    //unsigned long correct = 0;
 
     while (diffTime < 6000)
     {
@@ -31,10 +33,11 @@ void primes()
                 break;
             }
         }
-        
+
         if (flag)
         {
             localPrimes.push_back(n);
+            //correct++;
         }
 
         n++;
@@ -43,11 +46,10 @@ void primes()
         diffTime = std::chrono::duration<double, std::centi>(std::chrono::high_resolution_clock::now() - startTime).count();
     }
 
-    //printf("Final score: %.2lf\n", localPrimes.size()/(((float)startTicks/CLOCKS_PER_SEC)*100));
-
     mylock.lock();
 
-    multiPrimes.push_back((double)localPrimes.size()/6000);
+    multiPrimes.push_back((double)localPrimes.size()/diffTime);
+    //multiPrimes.push_back(correct/diffTime);
 
     mylock.unlock();
 
@@ -62,24 +64,24 @@ void join_all(std::vector<std::thread>& threadVect)
     }
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    threads.push_back(std::thread(primes));
-    join_all(threads);
+    if (argv[1] == NULL)
+    {
+        threadCount = std::thread::hardware_concurrency();
+    }
+    else
+    {
+        threadCount = atoi(argv[1]);
+    }
 
-    singlePrime = multiPrimes[0];
 
-    threads.clear();
-    multiPrimes.clear();
-
-
-    for (int i = 0; i < std::thread::hardware_concurrency(); i++)
+    for (int i = 0; i < threadCount; i++)
     {
         threads.push_back(std::thread(primes));
     }
     join_all(threads);
 
-    double projectedTotal = singlePrime * std::thread::hardware_concurrency();
     double actualTotal = 0;
 
     for (int i = 0; i < multiPrimes.size(); i++)
@@ -87,10 +89,7 @@ int main()
         actualTotal += multiPrimes[i]; 
     }
 
-
-    printf("Single-Core Score: %lf\n", singlePrime);
-    printf("Projected Multi-Core Score: %lf\n", singlePrime*std::thread::hardware_concurrency());
-    printf("Average Multi-Core Score: %lf\n", actualTotal/std::thread::hardware_concurrency());
+    printf("Average Multi-Core Score: %lf\n", actualTotal/threadCount);
     printf("Actual Multi-Core Score: %lf\n", actualTotal);
 
     return 0;
