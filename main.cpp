@@ -1,24 +1,25 @@
+#include <ctime>
 #include <chrono>
 #include <vector>
 #include <stdio.h>
 #include <math.h>
 #include <thread>
 #include <mutex>
-#include <future>
+#include <algorithm>
 
 unsigned long threadCount = 0;
 
-//std::mutex mylock;
-//std::vector<std::thread> threads;
-std::vector<std::future<double>> returns;
-//std::vector<double> multiPrimes;
+std::mutex mylock;
+std::vector<std::thread> threads;
+std::vector<double> multiPrimes;
 
-double primes()
+void primes()
 {
     std::vector<unsigned long> localPrimes;
     auto startTime = std::chrono::high_resolution_clock::now();
     double diffTime = 0;
     unsigned long n = 0;
+    //unsigned long correct = 0;
 
     while (diffTime < 6000)
     {
@@ -36,6 +37,7 @@ double primes()
         if (flag)
         {
             localPrimes.push_back(n);
+            //correct++;
         }
 
         n++;
@@ -44,11 +46,13 @@ double primes()
         diffTime = std::chrono::duration<double, std::centi>(std::chrono::high_resolution_clock::now() - startTime).count();
     }
 
-    //mylock.lock();
-    //multiPrimes.push_back((double)localPrimes.size()/diffTime);
-    //mylock.unlock();
+    mylock.lock();
 
-    return (double)localPrimes.size()/diffTime;
+    multiPrimes.push_back((double)localPrimes.size()/diffTime);
+    //multiPrimes.push_back(correct/diffTime);
+
+    mylock.unlock();
+
 }
 
 void join_all(std::vector<std::thread>& threadVect)
@@ -74,21 +78,15 @@ int main(int argc, char* argv[])
 
     for (int i = 0; i < threadCount; i++)
     {
-	returns.push_back(std::async(primes));
-        //threads.push_back(std::thread(primes));
+        threads.push_back(std::thread(primes));
     }
-    //join_all(threads);
+    join_all(threads);
 
     double actualTotal = 0;
 
-    //for (int i = 0; i < multiPrimes.size(); i++)
-    //{
-    //    actualTotal += multiPrimes[i]; 
-    //}
-
-    for (int i = 0; i < returns.size(); i++)
+    for (int i = 0; i < multiPrimes.size(); i++)
     {
-	actualTotal += returns[i].get();
+        actualTotal += multiPrimes[i]; 
     }
 
     printf("Average Multi-Core Score: %lf\n", actualTotal/threadCount);
