@@ -48,14 +48,16 @@ void primes()
 
     mylock.lock();
 
+
     multiPrimes.push_back((double)localPrimes.size()/diffTime);
     //multiPrimes.push_back(correct/diffTime);
+    //multiPrimes.push_back(localPrimes.size());
 
     mylock.unlock();
 
 }
 
-void join_all(std::vector<std::thread>& threadVect)
+void join_all(std::vector<std::thread> &threadVect)
 {
     // I thought this would be simpler than the example I found. Condensed into one function.
     for (int i = 0; i < threadVect.size(); i++)
@@ -87,6 +89,11 @@ int main(int argc, char* argv[])
     for (int i = 0; i < multiPrimes.size(); i++)
     {
         actualTotal += multiPrimes[i]; 
+    }
+
+    for (int i = 0; i < multiPrimes.size(); i++)
+    {
+        printf("Thread %i: %lf\n", i+1, multiPrimes[i]);
     }
 
     printf("Average Multi-Core Score: %lf\n", actualTotal/threadCount);
