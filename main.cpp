@@ -1,17 +1,20 @@
+#include <iostream>
 #include <ctime>
 #include <chrono>
 #include <vector>
-#include <stdio.h>
-#include <math.h>
+#include <cmath>
 #include <thread>
 #include <mutex>
 #include <algorithm>
 
-unsigned long threadCount = 0;
+unsigned long systemThreadTotal = std::thread::hardware_concurrency();
+unsigned long threadCount = systemThreadTotal;
 
 std::mutex mylock;
 std::vector<std::thread> threads;
 std::vector<double> multiPrimes;
+
+
 
 void primes()
 {
@@ -19,13 +22,12 @@ void primes()
     auto startTime = std::chrono::high_resolution_clock::now();
     double diffTime = 0;
     unsigned long n = 0;
-    //unsigned long correct = 0;
 
-    while (diffTime < 6000)
+    while (diffTime < 3000)
     {
         bool flag = true;
 
-        for (unsigned long i = 2; i <= sqrtl(n); i++)
+        for (unsigned long i = 2; i <= sqrt(n); i++)
         {
             if (n % i == 0)
             {
@@ -37,7 +39,6 @@ void primes()
         if (flag)
         {
             localPrimes.push_back(n);
-            //correct++;
         }
 
         n++;
@@ -47,14 +48,8 @@ void primes()
     }
 
     mylock.lock();
-
-
     multiPrimes.push_back((double)localPrimes.size()/diffTime);
-    //multiPrimes.push_back(correct/diffTime);
-    //multiPrimes.push_back(localPrimes.size());
-
     mylock.unlock();
-
 }
 
 void join_all(std::vector<std::thread> &threadVect)
@@ -68,14 +63,26 @@ void join_all(std::vector<std::thread> &threadVect)
 
 int main(int argc, char* argv[])
 {
-    if (argv[1] == NULL)
-    {
-        threadCount = std::thread::hardware_concurrency();
-    }
-    else
+    // Checking for threadCount argument.
+    if (argv[1] != nullptr)
     {
         threadCount = atoi(argv[1]);
+        if (threadCount > systemThreadTotal)
+        {
+            threadCount = systemThreadTotal;
+        }
     }
+
+
+
+    threads.push_back(std::thread(primes));
+    join_all(threads);
+
+    double singleScore = multiPrimes[0];
+
+    threads.clear();
+    multiPrimes.clear();
+
 
 
     for (int i = 0; i < threadCount; i++)
@@ -84,20 +91,19 @@ int main(int argc, char* argv[])
     }
     join_all(threads);
 
-    double actualTotal = 0;
-
+    double  multiScore = 0;
     for (int i = 0; i < multiPrimes.size(); i++)
     {
-        actualTotal += multiPrimes[i]; 
+        multiScore += multiPrimes[i]; 
     }
 
-    for (int i = 0; i < multiPrimes.size(); i++)
-    {
-        printf("Thread %i: %lf\n", i+1, multiPrimes[i]);
-    }
 
-    printf("Average Multi-Core Score: %lf\n", actualTotal/threadCount);
-    printf("Actual Multi-Core Score: %lf\n", actualTotal);
+
+    std::cout << "Single-thread Score:        " << singleScore                                                          << "\n";
+    //std::cout << "Average Multi-thread Score: " <<    multiScore/threadCount << "\n";
+    std::cout << "Multi-thread Score:         " <<  multiScore                                                          << "\n";
+
+    std::cout << "Ratio:                      " << 1 << ":" << threadCount * multiScore/(singleScore*threadCount)       << "\n";
 
     return 0;
 }
