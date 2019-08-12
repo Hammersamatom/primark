@@ -2,7 +2,7 @@ CC=g++
 CPPFLAGS=-march=native -mtune=native -O3 -fno-plt -flto -fno-exceptions
 LDFLAGS=-lpthread
 DEBUG =-Wall -Wextra -Werror -pedantic
-PROGNAME=primark
+PROGNAME=primark-async
 
 $(PROGNAME): main.o
 	$(CC) -o $(PROGNAME) main.o $(CPPFLAGS) $(DEBUG) $(LDFLAGS)

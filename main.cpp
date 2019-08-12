@@ -1,17 +1,14 @@
+#include <iostream>
+#include <ctime>
 #include <chrono>
 #include <vector>
-#include <stdio.h>
-#include <math.h>
-#include <thread>
-#include <mutex>
+#include <cmath>
 #include <future>
+
 
 unsigned long threadCount = 0;
 
-//std::mutex mylock;
-//std::vector<std::thread> threads;
 std::vector<std::future<double>> returns;
-//std::vector<double> multiPrimes;
 
 double primes()
 {
@@ -44,55 +41,52 @@ double primes()
         diffTime = std::chrono::duration<double, std::centi>(std::chrono::high_resolution_clock::now() - startTime).count();
     }
 
-    //mylock.lock();
-    //multiPrimes.push_back((double)localPrimes.size()/diffTime);
-    //mylock.unlock();
-
     return (double)localPrimes.size()/diffTime;
 }
 
-void join_all(std::vector<std::thread>& threadVect)
-{
-    // I thought this would be simpler than the example I found. Condensed into one function.
-    for (int i = 0; i < threadVect.size(); i++)
-    {
-        threadVect[i].join();
-    }
-}
+
 
 int main(int argc, char* argv[])
 {
-    if (argv[1] == NULL)
-    {
-        threadCount = std::thread::hardware_concurrency();
-    }
-    else
+    if (argv[1] != nullptr)
     {
         threadCount = atoi(argv[1]);
     }
 
+    
 
-    for (int i = 0; i < threadCount; i++)
+    returns.push_back(std::async(primes));
+    double singleScore = returns[0].get();
+
+
+
+
+    if (threadCount > 1)
     {
-	returns.push_back(std::async(primes));
-        //threads.push_back(std::thread(primes));
+        returns.clear();
+        
+        for (int i = 0; i < threadCount; i++)
+        {
+	        returns.push_back(std::async(primes));
+        }
     }
-    //join_all(threads);
 
-    double actualTotal = 0;
 
-    //for (int i = 0; i < multiPrimes.size(); i++)
-    //{
-    //    actualTotal += multiPrimes[i]; 
-    //}
+    double multiScore = 0;
+    for (int i = 0; i < returns.size(); i++)
+    {
+	    multiScore += returns[i].get();
+    }
+
 
     for (int i = 0; i < returns.size(); i++)
     {
-	actualTotal += returns[i].get();
+	    multiScore += returns[i].get();
     }
 
-    printf("Average Multi-Core Score: %lf\n", actualTotal/threadCount);
-    printf("Actual Multi-Core Score: %lf\n", actualTotal);
+    std::cout << "[Singular-thread Score] >> " << singleScore 							                               << "\n";
+    std::cout << "[Multiple-thread Score] >> " << multiScore  							                               << "\n";
+    std::cout << "[Ratio]                 >> " << 1 << ":" << threadCount * multiScore/(singleScore*threadCount)       << "\n";
 
     return 0;
 }
