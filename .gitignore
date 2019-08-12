@@ -1,5 +1,5 @@
 # Name of the program
-primark
+primark-async
 
 # Compiled stuff
 *.o
