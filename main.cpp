@@ -16,10 +16,39 @@ std::vector<double> multiPrimes;
 
 
 
+template <typename type>  
+type intSqrt (type remainder)  
+{  
+  if (remainder < 0) // if type is unsigned this will be ignored = no runtime  
+    return 0; // negative number ERROR  
+  
+  type place = (type)1 << (sizeof (type) * 8 - 2);
+   // calculated by precompiler = same runtime as: place = 0x40000000  
+  while (place > remainder)  
+    place /= 4; // optimized by complier as place >>= 2  
+  
+  type root = 0;  
+  while (place)  
+  {  
+    if (remainder >= root+place)  
+    {  
+      remainder -= root+place;  
+      root += place * 2;  
+    }  
+    root /= 2;  
+    place /= 4;  
+  }  
+  return root;  
+}  
+
+
+
 int fast_mod(const int input, const int ceil)
 {
     return input >= ceil ? input % ceil: input;
 }
+
+
 
 void primes()
 {
@@ -57,6 +86,8 @@ void primes()
     mylock.unlock();
 }
 
+
+
 void join_all(std::vector<std::thread> &threadVect)
 {
     // I thought this would be simpler than the example I found. Condensed into one function.
@@ -65,6 +96,8 @@ void join_all(std::vector<std::thread> &threadVect)
         threadVect[i].join();
     }
 }
+
+
 
 int main(int argc, char* argv[])
 {
