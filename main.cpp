@@ -15,41 +15,14 @@ std::vector<std::thread> threads;
 std::vector<double> multiPrimes;
 
 
-
-template <typename type>  
-type intSqrt (type remainder)  
-{  
-  if (remainder < 0) // if type is unsigned this will be ignored = no runtime  
-    return 0; // negative number ERROR  
-  
-  type place = (type)1 << (sizeof (type) * 8 - 2);
-   // calculated by precompiler = same runtime as: place = 0x40000000  
-  while (place > remainder)  
-    place /= 4; // optimized by complier as place >>= 2  
-  
-  type root = 0;  
-  while (place)  
-  {  
-    if (remainder >= root+place)  
-    {  
-      remainder -= root+place;  
-      root += place * 2;  
-    }  
-    root /= 2;  
-    place /= 4;  
-  }  
-  return root;  
-}  
-
-
-
+//TODO: Comment what this does.
 int fast_mod(const int input, const int ceil)
 {
     return input >= ceil ? input % ceil: input;
 }
 
 
-
+//TODO: Comment what this does.
 void primes()
 {
     std::vector<unsigned long> localPrimes;
@@ -87,7 +60,7 @@ void primes()
 }
 
 
-
+//TODO: Comment what this does.
 void join_all(std::vector<std::thread> &threadVect)
 {
     // I thought this would be simpler than the example I found. Condensed into one function.
@@ -111,6 +84,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    std::cout << "== Starting Single thread run" << std::endl;
 
     // This is for the single-thread score.
     threads.push_back(std::thread(primes));
@@ -118,7 +92,7 @@ int main(int argc, char* argv[])
 
     double singleScore = multiPrimes[0];
     
-
+    std::cout << "== Starting Multiple thread run" << std::endl;
 
     // Skip running a single thread twice.
     if (threadCount > 1)
@@ -141,10 +115,10 @@ int main(int argc, char* argv[])
     }
 
 
-
-    std::cout << "[Singuler-thread Score] >> " << singleScore                                                          << "\n";
-    std::cout << "[Multiple-thread Score] >> " << multiScore                                                           << "\n";
-    std::cout << "[Ratio]                 >> " << 1 << ":" << threadCount * multiScore/(singleScore*threadCount)       << "\n";
+    std::cout << "====================================================="                                                << std::endl;
+    std::cout << "== [Single-thread Score] >> " << singleScore                                                          << std::endl;
+    std::cout << "== [Multi-thread  Score] >> " << multiScore                                                           << std::endl;
+    std::cout << "== [Ratio]               >> " << 1 << ":" << threadCount * multiScore/(singleScore*threadCount)       << std::endl;
 
     return 0;
 }
