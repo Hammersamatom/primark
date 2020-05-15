@@ -14,12 +14,7 @@ std::mutex mylock;
 std::vector<std::thread> threads;
 std::vector<double> multiPrimes;
 
-
-//TODO: Comment what this does.
-int fast_mod(const int input, const int ceil)
-{
-    return input >= ceil ? input % ceil: input;
-}
+unsigned long centiLength = 3000;
 
 
 //TODO: Comment what this does.
@@ -30,13 +25,13 @@ void primes()
     double diffTime = 0;
     unsigned long n = 0;
 
-    while (diffTime < 3000)
+    while (diffTime < centiLength)
     {
         bool flag = true;
 
         for (unsigned long i = 2; i <= sqrt(n); i++)
         {
-            if (fast_mod(n, i) == 0)
+            if (n % i == 0)
             {
                 flag = false;
                 break;
