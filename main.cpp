@@ -3,10 +3,12 @@
 #include <chrono>
 #include <vector>
 #include <cmath>
+#include <thread>
 #include <future>
 
-
-unsigned long threadCount = 0;
+unsigned long systemThreadTotal = std::thread::hardware_concurrency();
+unsigned long threadCount = systemThreadTotal;
+unsigned long centiLength = 3000;
 
 std::vector<std::future<double>> returns;
 
@@ -17,7 +19,7 @@ double primes()
     double diffTime = 0;
     unsigned long n = 0;
 
-    while (diffTime < 6000)
+    while (diffTime < centiLength)
     {
         bool flag = true;
 
@@ -48,19 +50,20 @@ double primes()
 
 int main(int argc, char* argv[])
 {
+    double singleScore = 0;
+    double multiScore = 0;
+
     if (argv[1] != nullptr)
     {
         threadCount = atoi(argv[1]);
     }
-
     
-
+    std::cout << "== Starting Single thread run" << std::endl;
     returns.push_back(std::async(primes));
-    double singleScore = returns[0].get();
+    singleScore = returns[0].get();
 
 
-
-
+    std::cout << "== Starting Multiple thread run" << std::endl;
     if (threadCount > 1)
     {
         returns.clear();
@@ -69,24 +72,20 @@ int main(int argc, char* argv[])
         {
 	        returns.push_back(std::async(primes));
         }
+
+        for (int i = 0; i < returns.size(); i++)
+        {
+	        multiScore += returns[i].get();
+        }
     }
-
-
-    double multiScore = 0;
-    for (int i = 0; i < returns.size(); i++)
+    else
     {
-	    multiScore += returns[i].get();
-    }
-
-
-    for (int i = 0; i < returns.size(); i++)
-    {
-	    multiScore += returns[i].get();
+        multiScore = singleScore;
     }
 
     std::cout << "[Singular-thread Score] >> " << singleScore 							                               << "\n";
     std::cout << "[Multiple-thread Score] >> " << multiScore  							                               << "\n";
-    std::cout << "[Ratio]                 >> " << 1 << ":" << threadCount * multiScore/(singleScore*threadCount)       << "\n";
+    std::cout << "[Ratio]                 >> " << 1 << ":" << multiScore/singleScore                                   << "\n";
 
     return 0;
 }

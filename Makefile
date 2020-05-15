@@ -1,5 +1,5 @@
 CC=g++
-CPPFLAGS=-march=native -mtune=native -O3 -fno-plt -flto -fno-exceptions
+CPPFLAGS=-O2
 LDFLAGS=-lpthread
 DEBUG =-Wall -Wextra -Werror -pedantic
 PROGNAME=primark-async
@@ -13,4 +13,4 @@ strip:
 
 .PHONY: clean
 clean:
-	rm $(PROGNAME) *.o *.out
+	rm $(PROGNAME) *.o
