@@ -1,7 +1,7 @@
 CC=g++
-CPPFLAGS=-O3
+CPPFLAGS=-O2
 LDFLAGS=-lpthread
-DEBUG =-Wall -Wextra -Werror -pedantic
+DEBUG =-Wall -Wextra -Werror -pedantic -march=x86-64 -mtune=generic
 PROGNAME=primark
 
 $(PROGNAME): main.o
@@ -13,4 +13,4 @@ strip:
 
 .PHONY: clean
 clean:
-	rm $(PROGNAME) *.o *.out
+	rm $(PROGNAME) *.o
