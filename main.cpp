@@ -73,7 +73,7 @@ int main(int argc, char* argv[])
     if (argv[1] != nullptr)
     {
         threadCount = atoi(argv[1]);
-        if (threadCount > systemThreadTotal || threadCount == 0)
+        if (threadCount < systemThreadTotal || threadCount == 0)
         {
             threadCount = systemThreadTotal;
         }
