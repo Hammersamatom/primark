@@ -24,6 +24,7 @@ void primes()
     auto startTime = std::chrono::steady_clock::now();
     double diffTime = 0;
     unsigned long n = 0;
+    unsigned long s = 0;
 
     while (diffTime < centiLength)
     {
@@ -40,7 +41,8 @@ void primes()
 
         if (flag)
         {
-            localPrimes.push_back(n);
+            s++;
+            //localPrimes.push_back(n);
         }
 
         n++;
@@ -50,7 +52,8 @@ void primes()
     }
 
     mylock.lock();
-    multiPrimes.push_back((double)localPrimes.size()/diffTime);
+    //multiPrimes.push_back((double)localPrimes.size()/diffTime);
+    multiPrimes.push_back((double)s/diffTime);
     mylock.unlock();
 }
 
