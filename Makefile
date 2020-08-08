@@ -1,7 +1,7 @@
 CC=g++
 CPPFLAGS=-O2
 LDFLAGS=-lpthread
-DEBUG =-Wall -Wextra -Werror -pedantic -march=x86-64 -mtune=generic
+DEBUG =-Wall -Wextra -Werror -pedantic
 PROGNAME=primark
 
 $(PROGNAME): main.o
